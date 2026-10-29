@@ -4,186 +4,274 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Facturas</title>
-<meta name="theme-color" content="#1f5c46">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Facturas">
+<meta name="theme-color" content="#b3261e">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="Facturas">
+<title>Facturas</title>
 <style>
-:root{--bg:#f3f5f2;--card:#fff;--ink:#1d2a24;--mut:#68746d;--line:#d9dfda;--acc:#1f5c46;--acc2:#e9f1ec;--bad:#a43a2f}
-@media (prefers-color-scheme:dark){:root{--bg:#141a17;--card:#1d2621;--ink:#e8efea;--mut:#98a69d;--line:#2f3b34;--acc:#5fb890;--acc2:#24342c;--bad:#e0786c}}
+:root{--bg:#f6f3f2;--card:#fff;--ink:#26201f;--mut:#766967;--line:#e3dad8;--acc:#b3261e;--acc2:#fbeceb;--on:#fff;--bad:#8a1c15;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#1a1514;--card:#251d1c;--ink:#f1e8e6;--mut:#b0a09d;--line:#3a2e2c;--acc:#ff6b5e;--acc2:#3a2321;--on:#2a0c09;--bad:#ff9a90}}
 *{box-sizing:border-box}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:16px/1.45 "Segoe UI",Roboto,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-header{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);display:flex;gap:4px;padding:8px 12px;z-index:5;flex-wrap:wrap}
-header b{margin-right:auto;align-self:center;font-size:18px}
-nav button{background:none;border:0;padding:8px 12px;border-radius:8px;color:var(--mut);font:inherit;cursor:pointer}
+header{position:sticky;top:0;background:var(--card);border-bottom:3px solid var(--acc);display:flex;gap:4px;padding:8px 12px;z-index:5;flex-wrap:wrap;align-items:center}
+header b{margin-right:auto;font-size:18px;color:var(--acc)}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav button{background:none;border:0;padding:8px 10px;border-radius:8px;color:var(--mut);font:inherit;cursor:pointer}
 nav button.on{background:var(--acc2);color:var(--acc);font-weight:600}
 main{max-width:820px;margin:0 auto;padding:14px}
 section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
 h2{margin:0 0 10px;font-size:17px}
 .g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 label{display:block;font-size:13px;color:var(--mut)}
-input,textarea,select{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;margin-top:2px}
-button.b{background:var(--acc);color:#fff;border:0;padding:10px 16px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+input,textarea{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;margin-top:2px}
+input[type=checkbox]{width:auto}
+button.b{background:var(--acc);color:var(--on);border:0;padding:10px 16px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
 button.s{background:var(--acc2);color:var(--acc);border:0;padding:8px 12px;border-radius:8px;font:inherit;cursor:pointer}
 button.d{color:var(--bad)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .ln{display:grid;grid-template-columns:3fr 1fr 1.2fr auto;gap:6px;margin-bottom:6px;align-items:end}
 @media(max-width:560px){.ln{grid-template-columns:1fr 1fr}.ln>:first-child{grid-column:1/-1}}
-.tot{text-align:right;line-height:1.8}.tot strong{font-size:20px}
+.tot{text-align:right;line-height:1.8;margin-top:10px}.tot strong{font-size:20px;color:var(--acc)}
 .item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mut{color:var(--mut)}
 .hide{display:none!important}
-#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;max-width:90%}
-#dlg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:40;padding:20px}
+#auth{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+#auth .box{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:12px;padding:20px;max-width:360px;width:100%}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:80;max-width:90%}
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
 #dlg .box{background:var(--card);padding:18px;border-radius:12px;max-width:340px;width:100%}
 #sheet{background:#fff;color:#111;padding:28px;border:1px solid var(--line);border-radius:6px;font-size:14px}
 #sheet table{width:100%;border-collapse:collapse;margin:16px 0}
-#sheet th{text-align:left;border-bottom:2px solid #111;padding:6px 4px}
+#sheet th{text-align:left;border-bottom:2px solid #b3261e;padding:6px 4px}
 #sheet td{padding:6px 4px;border-bottom:1px solid #ddd}
 #sheet .r{text-align:right}
 #sheet .two{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
-@media print{header,#pbar,#toast,#dlg{display:none!important}body{background:#fff}main{padding:0;max-width:none}#sheet{border:0;padding:0}.view:not(#v-prev){display:none!important}}
+@media print{header,#pbar,#toast,#dlg,#auth{display:none!important}body{background:#fff}main{padding:0;max-width:none}#sheet{border:0;padding:0}.view:not(#v-prev){display:none!important}}
 </style>
 </head>
 <body>
+
+<div id="auth" class="hide"><div class="box">
+<h2 id="at"></h2><p class="mut" id="ahint" style="margin-top:0"></p>
+<label>Usuario<input id="au" autocomplete="username" autocapitalize="none" autocorrect="off"></label>
+<label style="margin-top:8px">Contraseña<input id="ap" type="password" autocomplete="current-password"></label>
+<label id="a2" style="margin-top:8px">Repetir contraseña<input id="ap2" type="password" autocomplete="new-password"></label>
+<button class="b" id="abtn" style="width:100%;margin-top:14px"></button>
+</div></div>
+
+<div id="app" class="hide">
 <header><b>Facturas</b>
-<nav class="row"><button data-v="new" class="on">Nueva</button><button data-v="list">Guardadas</button><button data-v="set">Mis datos</button></nav></header>
+<nav><button data-v="new" class="on">Nueva</button><button data-v="list">Guardadas</button><button data-v="set">Mis datos</button><button data-v="acc">Cuenta</button><button id="lock">Bloquear</button></nav></header>
 <main>
 
 <div class="view" id="v-new">
-<section><h2>Datos de la factura</h2><div class="g">
+<section><h2>Factura</h2><div class="g">
 <label>Número<input id="num"></label>
 <label>Fecha<input id="fecha" type="date"></label>
 </div></section>
 <section><h2>Cliente</h2><div class="g">
 <label>Nombre o razón social<input id="cn"></label>
 <label>NIF / CIF<input id="cnif"></label>
-<label>Dirección<input id="cdir"></label>
+<label>Calle<input id="ccalle"></label>
+<label>Número<input id="cnum"></label>
+<label>Cód. postal<input id="ccp" inputmode="numeric"></label>
+<label>Ciudad<input id="cciu"></label>
 </div></section>
 <section><h2>Conceptos</h2><div id="lines"></div>
 <button class="s" id="addl">+ Añadir línea</button>
-<div class="g" style="margin-top:12px">
-<label>IVA %<input id="iva" type="number" step="0.01"></label>
-<label class="opt-irpf">IRPF % (retención)<input id="irpf" type="number" step="0.01"></label>
-</div>
+<div class="g" style="margin-top:12px"><label>IVA %<input id="iva" type="number" step="0.01"></label></div>
 <div class="tot" id="tots"></div></section>
-<section><h2>Pago y notas</h2><div class="g">
-<label>Forma de pago<input id="pago" placeholder="Transferencia, efectivo…"></label>
-<label>Notas<textarea id="notas" rows="2"></textarea></label>
-</div></section>
+<section><label>Notas (opcional)<textarea id="notas" rows="2"></textarea></label></section>
 <div class="row"><button class="b" id="save">Guardar y ver factura</button><button class="s" id="clear">Vaciar formulario</button></div>
 </div>
 
 <div class="view hide" id="v-list"><section><h2>Facturas guardadas</h2><div id="items"></div></section>
-<section><h2>Copia de seguridad</h2><p style="color:var(--mut);margin-top:0">Descarga un archivo con todas las facturas para no perderlas si se borran los datos del navegador.</p>
-<div class="row"><button class="s" id="exp">Descargar copia</button><label class="s" style="margin:0;cursor:pointer;display:inline-block;padding:8px 12px;border-radius:8px">Restaurar copia<input id="imp" type="file" accept=".json" class="hide"></label></div></section></div>
+<section><h2>Copia de seguridad</h2><p class="mut" style="margin-top:0">Descarga un archivo con todas tus facturas para no perderlas si se borran los datos del navegador.</p>
+<div class="row"><button class="s" id="exp">Descargar copia</button><label class="s" style="margin:0;cursor:pointer;display:inline-block;padding:8px 12px;border-radius:8px;color:var(--acc)">Restaurar copia<input id="imp" type="file" accept=".json" class="hide"></label></div></section></div>
 
-<div class="view hide" id="v-set"><section><h2>Mis datos (salen en todas las facturas)</h2><div class="g">
+<div class="view hide" id="v-set"><section><h2>Mis datos (salen en las facturas)</h2><div class="g">
 <label>Nombre completo<input id="en"></label>
 <label>NIF<input id="enif"></label>
 <label>Dirección<input id="edir"></label>
-<label>Teléfono<input id="etel"></label>
-<label>Email<input id="eem"></label>
-<label>IBAN<input id="eiban"></label>
-<label>IVA por defecto %<input id="siva" type="number" step="0.01"></label>
-<label>IRPF por defecto %<input id="sirpf" type="number" step="0.01"></label>
-<label>Siguiente número<input id="snext" type="number"></label>
-<label>Prefijo del número<input id="spre" placeholder="Ej: 2026-"></label>
+<label>Próximo número de factura<input id="snext" type="number" min="1"></label>
 </div>
-<label style="margin-top:10px"><input type="checkbox" id="uirpf" style="width:auto"> Usar IRPF en las facturas</label>
-<label><input type="checkbox" id="uiban" style="width:auto"> Mostrar IBAN en la factura</label>
-<label><input type="checkbox" id="upago" style="width:auto"> Mostrar forma de pago y notas</label>
-<div class="row" style="margin-top:12px"><button class="b" id="saveset">Guardar mis datos</button></div></section></div>
+<p class="mut">El número sube solo cada vez que guardas una factura nueva.</p>
+<div class="row"><button class="b" id="saveset">Guardar mis datos</button></div></section></div>
+
+<div class="view hide" id="v-acc">
+<section><h2>Cambiar mi contraseña</h2><div class="g">
+<label>Actual<input id="pw0" type="password" autocomplete="current-password"></label>
+<label>Nueva (mín. 6)<input id="pw1" type="password" autocomplete="new-password"></label>
+<label>Repetir nueva<input id="pw2" type="password" autocomplete="new-password"></label></div>
+<div class="row" style="margin-top:10px"><button class="b" id="chpw">Cambiar contraseña</button></div></section>
+<div id="adm">
+<section><h2>Usuarios</h2><div id="ulist"></div></section>
+<section class="hide" id="rp"><h2 id="rpt"></h2><label>Nueva contraseña (mín. 6)<input id="rpw" type="password" autocomplete="new-password"></label>
+<div class="row" style="margin-top:10px"><button class="b" id="rpsave">Guardar</button><button class="s" id="rpno">Cancelar</button></div></section>
+<section><h2>Añadir usuario</h2><div class="g">
+<label>Nombre de usuario<input id="nu" autocapitalize="none"></label>
+<label>Contraseña (mín. 6)<input id="np" type="password" autocomplete="new-password"></label></div>
+<label style="margin-top:8px"><input type="checkbox" id="nadm"> Es administrador (puede gestionar usuarios)</label>
+<div class="row" style="margin-top:10px"><button class="b" id="addu">Añadir usuario</button></div>
+<p class="mut">Cada usuario tiene sus propias facturas y datos, separados de los demás.</p></section>
+</div></div>
 
 <div class="view hide" id="v-prev"><div class="row" id="pbar" style="margin-bottom:10px">
 <button class="b" id="print">Imprimir / Guardar PDF</button><button class="s" id="edit">Editar</button><button class="s" id="back">Volver</button></div>
 <div id="sheet"></div></div>
 
-</main>
+</main></div>
+
 <div id="toast" class="hide"></div>
 <div id="dlg" class="hide"><div class="box"><p id="dm" style="margin-top:0"></p><div class="row"><button class="b" id="dok">Aceptar</button><button class="s" id="dno">Cancelar</button></div></div></div>
+
 <script>
-const K='facturas_app_v1';
 const $=id=>document.getElementById(id);
 function msg(t){const e=$('toast');e.textContent=t;e.classList.remove('hide');clearTimeout(msg.t);msg.t=setTimeout(()=>e.classList.add('hide'),3200)}
 function ask(t,fn){$('dm').textContent=t;$('dlg').classList.remove('hide');$('dok').onclick=()=>{$('dlg').classList.add('hide');fn()};$('dno').onclick=()=>$('dlg').classList.add('hide')}
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-const def={s:{en:'',enif:'',edir:'',etel:'',eem:'',eiban:'',iva:21,irpf:0,next:1,pre:new Date().getFullYear()+'-',uirpf:true,uiban:true,upago:true},inv:[]};
-let db;try{db=JSON.parse(localStorage.getItem(K))||def}catch(e){db=def}
-db.s={...def.s,...db.s};
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){msg('No se pudo guardar en este navegador.')}};
 const eur=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n||0);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pad=n=>String(n).padStart(3,'0');
-let editId=null,cur=null;
+const today=()=>new Date().toISOString().slice(0,10);
 
+/* ---------- Usuarios y acceso ---------- */
+const UK='facturas_users_v1',DK=id=>'facturas_data_'+id;
+let U;try{U=JSON.parse(localStorage.getItem(UK))||{users:[]}}catch(e){U={users:[]}}
+const saveU=()=>{try{localStorage.setItem(UK,JSON.stringify(U))}catch(e){msg('No se pudo guardar.')}};
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const rnd=()=>hex(crypto.getRandomValues(new Uint8Array(16)));
+async function hash(pw,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+return hex(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:new TextEncoder().encode(salt),iterations:150000},k,256))}
+async function mkUser(name,pw,admin){const salt=rnd();return{id:rnd().slice(0,12),name:name.trim(),salt,hash:await hash(pw,salt),admin}}
+async function setPw(u,pw){u.salt=rnd();u.hash=await hash(pw,u.salt);saveU()}
+let me=null,db=null,fails=0,lockUntil=0,idle;
+const def=()=>({s:{en:'',enif:'',edir:'',next:1},inv:[]});
+const save=()=>{try{localStorage.setItem(DK(me.id),JSON.stringify(db))}catch(e){msg('No se pudo guardar en este navegador.')}};
+
+function showAuth(){const first=!U.users.length;$('app').classList.add('hide');$('auth').classList.remove('hide');
+$('at').textContent=first?'Crear usuario administrador':'Entrar';
+$('ahint').textContent=first?'Primera vez: elige un usuario y una contraseña. Este usuario podrá crear otros.':'Introduce tu usuario y contraseña.';
+$('a2').classList.toggle('hide',!first);$('abtn').textContent=first?'Crear y entrar':'Entrar';$('au').value=$('ap').value=$('ap2').value=''}
+$('abtn').onclick=async()=>{
+ if(!window.crypto||!crypto.subtle)return msg('Abre la app desde su dirección https.');
+ const name=$('au').value.trim(),pw=$('ap').value;
+ if(!U.users.length){
+  if(!name)return msg('Escribe un nombre de usuario.');
+  if(pw.length<6)return msg('La contraseña debe tener al menos 6 caracteres.');
+  if(pw!==$('ap2').value)return msg('Las contraseñas no coinciden.');
+  const u=await mkUser(name,pw,true);U.users.push(u);saveU();
+  try{const o=JSON.parse(localStorage.getItem('facturas_app_v1')||'null');if(o){const d=def();d.s={...d.s,en:o.s?.en||'',enif:o.s?.enif||'',edir:o.s?.edir||'',next:o.s?.next||1};d.inv=o.inv||[];localStorage.setItem(DK(u.id),JSON.stringify(d))}}catch(e){}
+  return enter(u)}
+ if(Date.now()<lockUntil)return msg('Demasiados intentos. Espera '+Math.ceil((lockUntil-Date.now())/1000)+' s.');
+ const u=U.users.find(x=>x.name.toLowerCase()===name.toLowerCase());
+ if(u&&await hash(pw,u.salt)===u.hash){fails=0;return enter(u)}
+ if(++fails>=5){fails=0;lockUntil=Date.now()+30000}
+ msg('Usuario o contraseña incorrectos.')};
+[$('au'),$('ap'),$('ap2')].forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')$('abtn').click()}));
+
+function enter(u){me=u;try{db=JSON.parse(localStorage.getItem(DK(u.id)))||def()}catch(e){db=def()}
+db.s={...def().s,...db.s};try{sessionStorage.setItem('fu',u.id)}catch(e){}
+$('auth').classList.add('hide');$('app').classList.remove('hide');resetForm();show('new');bump()}
+function lock(){me=null;db=null;clearTimeout(idle);try{sessionStorage.removeItem('fu')}catch(e){}
+document.querySelectorAll('#app input,#app textarea').forEach(i=>{if(i.type!=='checkbox')i.value=''});
+$('sheet').innerHTML=$('items').innerHTML=$('ulist').innerHTML='';showAuth()}
+const bump=()=>{clearTimeout(idle);idle=setTimeout(lock,300000)};
+['click','keydown','touchstart'].forEach(e=>addEventListener(e,()=>{if(me)bump()}));
+$('lock').onclick=lock;
+
+/* ---------- Navegación ---------- */
+let editId=null,cur=null,rpU=null;
 function show(v){document.querySelectorAll('.view').forEach(e=>e.classList.add('hide'));$('v-'+v).classList.remove('hide');
-document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo(0,0)}
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(b.dataset.v==='list')renderList();if(b.dataset.v==='set')loadSet();show(b.dataset.v)});
+document.querySelectorAll('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo(0,0)}
+document.querySelectorAll('nav button[data-v]').forEach(b=>b.onclick=()=>{const v=b.dataset.v;
+if(v==='list')renderList();if(v==='set')loadSet();if(v==='acc')renderAcc();show(v)});
 
+/* ---------- Factura ---------- */
 function addLine(l={d:'',q:1,p:''}){const d=document.createElement('div');d.className='ln';
 d.innerHTML=`<label>Descripción<input class="ld" value="${esc(l.d)}"></label><label>Cant.<input class="lq" type="number" step="any" value="${l.q}"></label><label>Precio €<input class="lp" type="number" step="any" value="${l.p}"></label><button class="s d" title="Quitar">✕</button>`;
 d.querySelector('button').onclick=()=>{d.remove();calc()};d.oninput=calc;$('lines').appendChild(d)}
 $('addl').onclick=()=>addLine();
-function getLines(){return[...document.querySelectorAll('.ln')].map(r=>({d:r.querySelector('.ld').value,q:+r.querySelector('.lq').value||0,p:+r.querySelector('.lp').value||0})).filter(l=>l.d||l.p)}
-function totals(lines,iva,irpf){const base=lines.reduce((a,l)=>a+l.q*l.p,0);const vi=base*iva/100,vr=base*irpf/100;return{base,vi,vr,total:base+vi-vr}}
-function calc(){const t=totals(getLines(),+$('iva').value||0,db.s.uirpf?+$('irpf').value||0:0);
-$('tots').innerHTML=`Base: ${eur(t.base)}<br>IVA: ${eur(t.vi)}${db.s.uirpf?`<br>IRPF: −${eur(t.vr)}`:''}<br><strong>Total: ${eur(t.total)}</strong>`}
-$('iva').oninput=$('irpf').oninput=calc;
-
-function resetForm(){editId=null;const s=db.s;$('num').value=s.pre+pad(s.next);$('fecha').value=new Date().toISOString().slice(0,10);
-['cn','cnif','cdir','pago','notas'].forEach(i=>$(i).value='');$('iva').value=s.iva;$('irpf').value=s.irpf;
-$('lines').innerHTML='';addLine();document.querySelectorAll('.opt-irpf').forEach(e=>e.style.display=s.uirpf?'':'none');calc()}
+const getLines=()=>[...document.querySelectorAll('.ln')].map(r=>({d:r.querySelector('.ld').value,q:+r.querySelector('.lq').value||0,p:+r.querySelector('.lp').value||0})).filter(l=>l.d||l.p);
+function totals(lines,iva){const base=lines.reduce((a,l)=>a+l.q*l.p,0),vi=base*iva/100;return{base,vi,total:base+vi}}
+function calc(){const t=totals(getLines(),+$('iva').value||0);$('tots').innerHTML=`Base: ${eur(t.base)}<br>IVA: ${eur(t.vi)}<br><strong>Total: ${eur(t.total)}</strong>`}
+$('iva').oninput=calc;
+function resetForm(){editId=null;$('num').value=pad(db.s.next);$('fecha').value=today();
+['cn','cnif','ccalle','cnum','ccp','cciu','notas'].forEach(i=>$(i).value='');$('iva').value=21;$('lines').innerHTML='';addLine();calc()}
 $('clear').onclick=resetForm;
-
-function formData(){return{id:editId||Date.now().toString(),num:$('num').value,fecha:$('fecha').value,
-c:{n:$('cn').value,nif:$('cnif').value,dir:$('cdir').value},lines:getLines(),iva:+$('iva').value||0,irpf:db.s.uirpf?+$('irpf').value||0:0,
-pago:$('pago').value,notas:$('notas').value,e:{...db.s}}}
-$('save').onclick=()=>{if(!$('cn').value.trim()||!getLines().length){msg('Pon el nombre del cliente y al menos una línea.');return}
-const f=formData();const i=db.inv.findIndex(x=>x.id===f.id);
-if(i>=0)db.inv[i]=f;else{db.inv.push(f);if(f.num===db.s.pre+pad(db.s.next))db.s.next++}
+function formData(){return{id:editId||Date.now().toString(),num:$('num').value.trim(),fecha:$('fecha').value,
+c:{n:$('cn').value,nif:$('cnif').value,calle:$('ccalle').value,num:$('cnum').value,cp:$('ccp').value,ciu:$('cciu').value},
+lines:getLines(),iva:+$('iva').value||0,notas:$('notas').value,e:{en:db.s.en,enif:db.s.enif,edir:db.s.edir}}}
+$('save').onclick=()=>{if(!$('cn').value.trim()||!getLines().length)return msg('Pon el nombre del cliente y al menos una línea.');
+const f=formData();if(!f.num)return msg('Falta el número de factura.');
+if(db.inv.some(x=>x.num===f.num&&x.id!==f.id))return msg('Ya existe una factura con el número '+f.num+'.');
+const i=db.inv.findIndex(x=>x.id===f.id);
+if(i>=0)db.inv[i]=f;else{db.inv.push(f);if(f.num===pad(db.s.next))db.s.next++}
 save();editId=f.id;showInv(f)};
 
-function showInv(f){cur=f;const e=f.e,t=totals(f.lines,f.iva,f.irpf),s=db.s;
+function showInv(f){cur=f;const e=f.e,t=totals(f.lines,f.iva),c=f.c;
 const fe=f.fecha?f.fecha.split('-').reverse().join('/'):'';
-$('sheet').innerHTML=`<div class="two"><div><h1 style="margin:0 0 4px;font-size:24px">FACTURA</h1><div>Nº ${esc(f.num)}</div><div>Fecha: ${fe}</div></div>
-<div style="text-align:right"><strong>${esc(e.en)}</strong><br>NIF: ${esc(e.enif)}<br>${esc(e.edir)}<br>${esc(e.etel)} ${esc(e.eem)}</div></div>
-<div style="margin-top:18px"><strong>Cliente</strong><br>${esc(f.c.n)}<br>${f.c.nif?'NIF/CIF: '+esc(f.c.nif)+'<br>':''}${esc(f.c.dir)}</div>
+const addr=c.calle||c.cp||c.ciu?`${esc(c.calle)}${c.num?', '+esc(c.num):''}<br>${esc(c.cp)} ${esc(c.ciu)}`:esc(c.dir||'');
+$('sheet').innerHTML=`<div class="two"><div><h1 style="margin:0 0 4px;font-size:24px;color:#b3261e">FACTURA</h1><div>Nº ${esc(f.num)}</div><div>Fecha: ${fe}</div></div>
+<div style="text-align:right"><strong>${esc(e.en)}</strong><br>${e.enif?'NIF: '+esc(e.enif)+'<br>':''}${esc(e.edir)}</div></div>
+<div style="margin-top:18px"><strong>Cliente</strong><br>${esc(c.n)}<br>${c.nif?'NIF/CIF: '+esc(c.nif)+'<br>':''}${addr}</div>
 <table><tr><th>Descripción</th><th class="r">Cant.</th><th class="r">Precio</th><th class="r">Importe</th></tr>
 ${f.lines.map(l=>`<tr><td>${esc(l.d)}</td><td class="r">${l.q}</td><td class="r">${eur(l.p)}</td><td class="r">${eur(l.q*l.p)}</td></tr>`).join('')}</table>
-<div style="text-align:right;line-height:1.7">Base imponible: ${eur(t.base)}<br>IVA (${f.iva}%): ${eur(t.vi)}${f.irpf?`<br>IRPF (−${f.irpf}%): −${eur(t.vr)}`:''}<br><strong style="font-size:18px">TOTAL: ${eur(t.total)}</strong></div>
-${s.upago&&(f.pago||f.notas)?`<p style="margin-top:20px">${f.pago?'<strong>Forma de pago:</strong> '+esc(f.pago)+'<br>':''}${esc(f.notas)}</p>`:''}
-${s.uiban&&e.eiban?`<p><strong>IBAN:</strong> ${esc(e.eiban)}</p>`:''}`;
+<div style="text-align:right;line-height:1.7">Base imponible: ${eur(t.base)}<br>IVA (${f.iva}%): ${eur(t.vi)}<br><strong style="font-size:18px">TOTAL: ${eur(t.total)}</strong></div>
+${f.notas?`<p style="margin-top:20px">${esc(f.notas)}</p>`:''}`;
 document.title='Factura '+f.num;show('prev')}
 $('print').onclick=()=>window.print();
-$('back').onclick=()=>{renderList();show('list')};
-$('edit').onclick=()=>{loadForm(cur)};
-
-function loadForm(f){resetForm();editId=f.id;$('num').value=f.num;$('fecha').value=f.fecha;$('cn').value=f.c.n;$('cnif').value=f.c.nif;$('cdir').value=f.c.dir;
-$('iva').value=f.iva;$('irpf').value=f.irpf;$('pago').value=f.pago;$('notas').value=f.notas;$('lines').innerHTML='';f.lines.forEach(addLine);calc();show('new')}
+$('back').onclick=()=>{document.title='Facturas';renderList();show('list')};
+$('edit').onclick=()=>loadForm(cur);
+function loadForm(f){resetForm();editId=f.id;const c=f.c;$('num').value=f.num;$('fecha').value=f.fecha;$('cn').value=c.n;$('cnif').value=c.nif;
+$('ccalle').value=c.calle||c.dir||'';$('cnum').value=c.num||'';$('ccp').value=c.cp||'';$('cciu').value=c.ciu||'';
+$('iva').value=f.iva;$('notas').value=f.notas||'';$('lines').innerHTML='';f.lines.forEach(addLine);calc();show('new')}
 
 function renderList(){const L=[...db.inv].reverse();
-$('items').innerHTML=L.length?'':'<p style="color:var(--mut)">Todavía no hay facturas. Crea la primera en “Nueva”.</p>';
-L.forEach(f=>{const t=totals(f.lines,f.iva,f.irpf);const d=document.createElement('div');d.className='item';
-d.innerHTML=`<div><strong>${esc(f.num)}</strong> · ${esc(f.c.n)}<br><small style="color:var(--mut)">${f.fecha.split('-').reverse().join('/')} · ${eur(t.total)}</small></div>
+$('items').innerHTML=L.length?'':'<p class="mut">Todavía no hay facturas. Crea la primera en “Nueva”.</p>';
+L.forEach(f=>{const t=totals(f.lines,f.iva);const d=document.createElement('div');d.className='item';
+d.innerHTML=`<div><strong>${esc(f.num)}</strong> · ${esc(f.c.n)}<br><small class="mut">${f.fecha.split('-').reverse().join('/')} · ${eur(t.total)}</small></div>
 <div class="row"><button class="s" data-a="v">Ver</button><button class="s" data-a="e">Editar</button><button class="s" data-a="c">Duplicar</button><button class="s d" data-a="x">Borrar</button></div>`;
 d.onclick=ev=>{const a=ev.target.dataset.a;if(!a)return;
 if(a==='v')showInv(f);if(a==='e')loadForm(f);
-if(a==='c'){loadForm({...f,id:null});editId=null;$('num').value=db.s.pre+pad(db.s.next);$('fecha').value=new Date().toISOString().slice(0,10)}
+if(a==='c'){loadForm(f);editId=null;$('num').value=pad(db.s.next);$('fecha').value=today()}
 if(a==='x')ask('¿Borrar la factura '+f.num+'?',()=>{db.inv=db.inv.filter(x=>x.id!==f.id);save();renderList()})};
 $('items').appendChild(d)})}
 
-const sm={en:'en',enif:'enif',edir:'edir',etel:'etel',eem:'eem',eiban:'eiban',siva:'iva',sirpf:'irpf',snext:'next',spre:'pre'};
-function loadSet(){for(const k in sm)$(k).value=db.s[sm[k]];$('uirpf').checked=db.s.uirpf;$('uiban').checked=db.s.uiban;$('upago').checked=db.s.upago}
-$('saveset').onclick=()=>{for(const k in sm){const n=['siva','sirpf','snext'].includes(k);db.s[sm[k]]=n?+$(k).value||0:$(k).value}
-db.s.uirpf=$('uirpf').checked;db.s.uiban=$('uiban').checked;db.s.upago=$('upago').checked;save();resetForm();msg('Datos guardados.')};
+/* ---------- Mis datos ---------- */
+function loadSet(){$('en').value=db.s.en;$('enif').value=db.s.enif;$('edir').value=db.s.edir;$('snext').value=db.s.next}
+$('saveset').onclick=()=>{db.s.en=$('en').value;db.s.enif=$('enif').value;db.s.edir=$('edir').value;db.s.next=Math.max(1,+$('snext').value||1);save();resetForm();msg('Datos guardados.')};
 
+/* ---------- Copia de seguridad ---------- */
 $('exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:'application/json'}));
-a.download='copia-facturas-'+new Date().toISOString().slice(0,10)+'.json';a.click()};
-$('imp').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.inv)throw 0;db=d;db.s={...def.s,...db.s};save();resetForm();renderList();msg('Copia restaurada.')}catch(x){msg('Archivo no válido.')}};r.readAsText(e.target.files[0])};
+a.download='copia-facturas-'+today()+'.json';a.click()};
+$('imp').onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.inv)throw 0;db={...def(),...d};db.s={...def().s,...db.s};save();resetForm();renderList();msg('Copia restaurada.')}catch(x){msg('Archivo no válido.')}};r.readAsText(e.target.files[0])};
 
-resetForm();
+/* ---------- Cuenta y usuarios ---------- */
+function renderAcc(){$('adm').classList.toggle('hide',!me.admin);$('rp').classList.add('hide');$('pw0').value=$('pw1').value=$('pw2').value='';
+$('ulist').innerHTML='';U.users.forEach(u=>{const d=document.createElement('div');d.className='item';
+d.innerHTML=`<div><strong>${esc(u.name)}</strong> <small class="mut">${u.admin?'administrador':'usuario'}${u.id===me.id?' · tú':''}</small></div>
+<div class="row"><button class="s" data-a="p">Nueva contraseña</button>${u.id!==me.id?'<button class="s d" data-a="x">Borrar</button>':''}</div>`;
+d.onclick=ev=>{const a=ev.target.dataset.a;if(a==='p'){rpU=u;$('rpt').textContent='Nueva contraseña para '+u.name;$('rpw').value='';$('rp').classList.remove('hide')}
+if(a==='x')ask('¿Borrar a '+u.name+' y todas sus facturas? No se puede deshacer.',()=>{U.users=U.users.filter(x=>x.id!==u.id);try{localStorage.removeItem(DK(u.id))}catch(e){}saveU();renderAcc()})};
+$('ulist').appendChild(d)})}
+$('chpw').onclick=async()=>{const n=$('pw1').value;
+if(await hash($('pw0').value,me.salt)!==me.hash)return msg('La contraseña actual no es correcta.');
+if(n.length<6)return msg('La nueva contraseña debe tener al menos 6 caracteres.');
+if(n!==$('pw2').value)return msg('Las contraseñas nuevas no coinciden.');
+await setPw(me,n);$('pw0').value=$('pw1').value=$('pw2').value='';msg('Contraseña cambiada.')};
+$('rpsave').onclick=async()=>{if($('rpw').value.length<6)return msg('Mínimo 6 caracteres.');await setPw(rpU,$('rpw').value);$('rp').classList.add('hide');msg('Contraseña cambiada.')};
+$('rpno').onclick=()=>$('rp').classList.add('hide');
+$('addu').onclick=async()=>{const n=$('nu').value.trim(),p=$('np').value;
+if(!n)return msg('Escribe un nombre de usuario.');if(p.length<6)return msg('La contraseña debe tener al menos 6 caracteres.');
+if(U.users.some(u=>u.name.toLowerCase()===n.toLowerCase()))return msg('Ese usuario ya existe.');
+U.users.push(await mkUser(n,p,$('nadm').checked));saveU();$('nu').value=$('np').value='';$('nadm').checked=false;renderAcc();msg('Usuario añadido.')};
+
+/* ---------- Inicio ---------- */
+let su=null;try{su=U.users.find(u=>u.id===sessionStorage.getItem('fu'))}catch(e){}
+su?enter(su):showAuth();
 </script>
 </body>
 </html>

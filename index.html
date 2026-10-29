@@ -44,11 +44,12 @@ button.d{color:var(--bad)}
 #dlg .box{background:var(--card);padding:18px;border-radius:12px;max-width:340px;width:100%}
 #sheet{background:#fff;color:#111;padding:28px;border:1px solid var(--line);border-radius:6px;font-size:14px}
 #sheet table{width:100%;border-collapse:collapse;margin:16px 0}
-#sheet th{text-align:left;border-bottom:2px solid #b3261e;padding:6px 4px}
+#sheet th{text-align:left;border-bottom:1px solid #111;padding:6px 4px}
 #sheet td{padding:6px 4px;border-bottom:1px solid #ddd}
 #sheet .r{text-align:right}
 #sheet .two{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
-@media print{header,#pbar,#toast,#dlg,#auth{display:none!important}body{background:#fff}main{padding:0;max-width:none}#sheet{border:0;padding:0}.view:not(#v-prev){display:none!important}}
+@page{size:A4;margin:0}
+@media print{header,#pbar,#toast,#dlg,#auth{display:none!important}body{background:#fff}main{padding:0;max-width:none}#sheet{border:0;padding:18mm}.view:not(#v-prev){display:none!important}}
 </style>
 </head>
 <body>
@@ -59,6 +60,8 @@ button.d{color:var(--bad)}
 <label style="margin-top:8px">Contraseña<input id="ap" type="password" autocomplete="current-password"></label>
 <label id="a2" style="margin-top:8px">Repetir contraseña<input id="ap2" type="password" autocomplete="new-password"></label>
 <button class="b" id="abtn" style="width:100%;margin-top:14px"></button>
+<div id="aimpw" class="hide" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);text-align:center"><span class="mut">¿Ya te han creado un usuario en otro dispositivo?</span><br>
+<label class="s" style="margin:8px 0 0;cursor:pointer;display:inline-block;padding:8px 12px;border-radius:8px;color:var(--acc)">Cargar archivo de usuarios<input id="uimp1" type="file" accept=".json" class="hide"></label></div>
 </div></div>
 
 <div id="app" class="hide">
@@ -108,6 +111,9 @@ button.d{color:var(--bad)}
 <div class="row" style="margin-top:10px"><button class="b" id="chpw">Cambiar contraseña</button></div></section>
 <div id="adm">
 <section><h2>Usuarios</h2><div id="ulist"></div></section>
+<section><h2>Usuarios en otro dispositivo</h2>
+<p class="mut" style="margin-top:0">Descarga un archivo con los usuarios (solo nombres y contraseñas cifradas, sin facturas) para cargarlos en otro móvil u ordenador, o carga el de otro dispositivo.</p>
+<div class="row"><button class="s" id="uexp">Descargar archivo de usuarios</button><label class="s" style="margin:0;cursor:pointer;display:inline-block;padding:8px 12px;border-radius:8px;color:var(--acc)">Cargar archivo de usuarios<input id="uimp2" type="file" accept=".json" class="hide"></label></div></section>
 <section class="hide" id="rp"><h2 id="rpt"></h2><label>Nueva contraseña (mín. 6)<input id="rpw" type="password" autocomplete="new-password"></label>
 <div class="row" style="margin-top:10px"><button class="b" id="rpsave">Guardar</button><button class="s" id="rpno">Cancelar</button></div></section>
 <section><h2>Añadir usuario</h2><div class="g">
@@ -154,7 +160,7 @@ const save=()=>{try{localStorage.setItem(DK(me.id),JSON.stringify(db))}catch(e){
 function showAuth(){const first=!U.users.length;$('app').classList.add('hide');$('auth').classList.remove('hide');
 $('at').textContent=first?'Crear usuario administrador':'Entrar';
 $('ahint').textContent=first?'Primera vez: elige un usuario y una contraseña. Este usuario podrá crear otros.':'Introduce tu usuario y contraseña.';
-$('a2').classList.toggle('hide',!first);$('abtn').textContent=first?'Crear y entrar':'Entrar';$('au').value=$('ap').value=$('ap2').value=''}
+$('a2').classList.toggle('hide',!first);$('aimpw').classList.toggle('hide',!first);$('abtn').textContent=first?'Crear y entrar':'Entrar';$('au').value=$('ap').value=$('ap2').value=''}
 $('abtn').onclick=async()=>{
  if(!window.crypto||!crypto.subtle)return msg('Abre la app desde su dirección https.');
  const name=$('au').value.trim(),pw=$('ap').value;
@@ -214,7 +220,7 @@ save();editId=f.id;showInv(f)};
 function showInv(f){cur=f;const e=f.e,t=totals(f.lines,f.iva),c=f.c;
 const fe=f.fecha?f.fecha.split('-').reverse().join('/'):'';
 const addr=c.calle||c.cp||c.ciu?`${esc(c.calle)}${c.num?', '+esc(c.num):''}<br>${esc(c.cp)} ${esc(c.ciu)}`:esc(c.dir||'');
-$('sheet').innerHTML=`<div class="two"><div><h1 style="margin:0 0 4px;font-size:24px;color:#b3261e">FACTURA</h1><div>Nº ${esc(f.num)}</div><div>Fecha: ${fe}</div></div>
+$('sheet').innerHTML=`<div class="two"><div><h1 style="margin:0 0 4px;font-size:24px">FACTURA</h1><div>Nº ${esc(f.num)}</div><div>Fecha: ${fe}</div></div>
 <div style="text-align:right"><strong>${esc(e.en)}</strong><br>${e.enif?'NIF: '+esc(e.enif)+'<br>':''}${esc(e.edir)}</div></div>
 <div style="margin-top:18px"><strong>Cliente</strong><br>${esc(c.n)}<br>${c.nif?'NIF/CIF: '+esc(c.nif)+'<br>':''}${addr}</div>
 <table><tr><th>Descripción</th><th class="r">Cant.</th><th class="r">Precio</th><th class="r">Importe</th></tr>
@@ -268,6 +274,16 @@ $('addu').onclick=async()=>{const n=$('nu').value.trim(),p=$('np').value;
 if(!n)return msg('Escribe un nombre de usuario.');if(p.length<6)return msg('La contraseña debe tener al menos 6 caracteres.');
 if(U.users.some(u=>u.name.toLowerCase()===n.toLowerCase()))return msg('Ese usuario ya existe.');
 U.users.push(await mkUser(n,p,$('nadm').checked));saveU();$('nu').value=$('np').value='';$('nadm').checked=false;renderAcc();msg('Usuario añadido.')};
+
+/* ---------- Pasar usuarios entre dispositivos ---------- */
+function readUsers(file,done){if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.users))throw 0;let n=0;
+d.users.forEach(u=>{if(!/^[0-9a-f]{12}$/.test(u.id)||!/^[0-9a-f]{32}$/.test(u.salt)||!/^[0-9a-f]{64}$/.test(u.hash)||typeof u.name!=='string'||!u.name.trim())return;
+if(U.users.some(x=>x.id===u.id||x.name.toLowerCase()===u.name.trim().toLowerCase()))return;
+U.users.push({id:u.id,name:u.name.trim(),salt:u.salt,hash:u.hash,admin:!!u.admin});n++});
+if(!n)return msg('No se ha añadido ningún usuario nuevo.');saveU();msg(n+' usuario(s) cargado(s). Ya puedes entrar.');done()}catch(e){msg('Archivo no válido.')}};r.readAsText(file)}
+$('uimp1').onchange=e=>{if(!U.users.length)readUsers(e.target.files[0],showAuth)};
+$('uimp2').onchange=e=>{if(me&&me.admin)readUsers(e.target.files[0],renderAcc)};
+$('uexp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({tipo:'usuarios',users:U.users})],{type:'application/json'}));a.download='usuarios-facturas.json';a.click()};
 
 /* ---------- Inicio ---------- */
 let su=null;try{su=U.users.find(u=>u.id===sessionStorage.getItem('fu'))}catch(e){}
